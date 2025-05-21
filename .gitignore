@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.env
+*.sqlite3
+*.log
+
+# Django
+db.sqlite3
+*.pyc
+*.pyo
+*.pyd
+*.db
+.env
+*.env.*
+
+# VSCode, Pycharm и др.
+.vscode/
+.idea/
+
+# Node / React (если используется)
+node_modules/
+
+# Static / media
+/staticfiles/
+/media/

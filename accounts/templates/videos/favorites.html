@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">💖 Избранные видео</h2>
+
+  {% if videos %}
+    <div class="row">
+      {% for video in videos %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ video.title }}</h5>
+              <p class="card-text">{{ video.description|truncatechars:100 }}</p>
+              <p><strong>Автор:</strong> {{ video.author }}</p>
+              <p><strong>Категория:</strong> {{ video.category }}</p>
+              <p><strong>Теги:</strong> {{ video.tags }}</p>
+
+              <div class="mt-auto gap-2">
+                <a href="{{ video.youtube_url }}" target="_blank" class="btn btn-sm btn-outline-primary w-10">На YouTube</a>
+                <form method="post" action="{% url 'videos:toggle_favorite' video.id %}" class="w-10">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-sm btn-danger w-100">Удалить из избранного</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-warning">
+      У вас пока нет избранных видео.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

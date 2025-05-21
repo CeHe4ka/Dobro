@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">👤 Профиль пользователя</h1>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="row">
+    <!-- Личные данные -->
+    <div class="col-md-6">
+      <h4>Редактирование личных данных</h4>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </form>
+    </div>
+
+    <!-- Пароль -->
+    <div class="col-md-6">
+      <h4>Сменить пароль</h4>
+      <form method="post">
+        {% csrf_token %}
+        {{ password_form.as_p }}
+        <button type="submit" class="btn btn-warning">Обновить пароль</button>
+      </form>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- Оценённые видео -->
+  <div class="mt-4">
+    <h4>⭐ Оцененные видео</h4>
+    {% if ratings %}
+      <ul class="list-group">
+        {% for r in ratings %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ r.video.title }}</strong><br>
+              <small>{{ r.get_value_display }}</small>
+            </div>
+            <a href="{% url 'videos:remove_rating' r.video.id %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>Вы ещё не оценивали видео.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

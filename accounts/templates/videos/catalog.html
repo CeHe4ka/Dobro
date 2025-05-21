@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load dict_filters %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4"><i class="bi bi-film"></i> Каталог видео</h1>
+
+  <!-- Форма поиска -->
+  <form method="get" class="row g-2 mb-4 bg-light p-3 rounded shadow-sm">
+    <div class="col-md-4">
+      <input type="text" name="q" class="form-control" placeholder="Поиск..." value="{{ query }}">
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="category" class="form-control" placeholder="Категория" value="{{ category }}">
+    </div>
+    <div class="col-md-3">
+      <input type="text" name="tag" class="form-control" placeholder="Теги" value="{{ tag }}">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Найти</button>
+    </div>
+  </form>
+
+  {% if videos %}
+    <div class="row">
+      {% for video in videos %}
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ video.title }}</h5>
+              <p class="card-text">{{ video.description|truncatechars:100 }}</p>
+              <p><strong>Автор:</strong> {{ video.author }}</p>
+              <p><strong>Категория:</strong> {{ video.category }}</p>
+              <p><strong>Теги:</strong> {{ video.tags }}</p>
+
+              <!-- Оценка -->
+              <div class="mb-2">
+                {% if ratings|dict_get:video.id == 'like' %}
+                  👍 Вы поставили лайк
+                {% elif ratings|dict_get:video.id == 'dislike' %}
+                  👎 Вы поставили дизлайк
+                {% else %}
+                  Без оценки
+                {% endif %}
+              </div>
+
+              <!-- Кнопки оценок и избранного -->
+              <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'videos:rate_video' video.id 'like' %}" class="btn btn-outline-success btn-sm">👍 Лайк</a>
+                <a href="{% url 'videos:rate_video' video.id 'dislike' %}" class="btn btn-outline-danger btn-sm">👎 Дизлайк</a>
+                <a href="{% url 'videos:toggle_favorite' video.id %}" class="btn btn-outline-warning btn-sm">
+                  {% if video.id in favorites %}
+                    ⭐ Удалить из избранного
+                  {% else %}
+                    ☆ В избранное
+                  {% endif %}
+                </a>
+              </div>
+
+              <div class="mt-3 d-flex justify-content-between">
+                <a href="{% url 'videos:watch' video.id %}" class="btn btn-success btn-sm">Смотреть</a>
+                <a href="{{ video.youtube_url }}" target="_blank" class="btn btn-outline-primary btn-sm">На YouTube</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">Пока нет доступных видео.</div>
+  {% endif %}
+</div>
+{% endblock %}
