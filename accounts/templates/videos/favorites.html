@@ -1,37 +1,56 @@
 {% extends 'base.html' %}
+{% load video_filters %}
 
 {% block content %}
-<div class="container mt-4">
-  <h2 class="mb-4">💖 Избранные видео</h2>
+<div style="background: linear-gradient(to bottom right, #fff0f5, #e6ffe6); min-height: 100vh; padding-top: 40px; padding-bottom: 40px;">
+  <div class="container">
+    <h2 class="mb-5 text-center fw-bold" style="background: linear-gradient(to right, #ff69b4, #32cd32); -webkit-background-clip: text; color: transparent;">
+      💖 Избранные видео
+    </h2>
 
-  {% if videos %}
-    <div class="row">
-      {% for video in videos %}
-        <div class="col-md-6 col-lg-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ video.title }}</h5>
-              <p class="card-text">{{ video.description|truncatechars:100 }}</p>
-              <p><strong>Автор:</strong> {{ video.author }}</p>
-              <p><strong>Категория:</strong> {{ video.category }}</p>
-              <p><strong>Теги:</strong> {{ video.tags }}</p>
+    {% if videos %}
+      <div class="row">
+        {% for video in videos %}
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4 bg-white">
+              <div class="card-header text-white text-center fw-semibold" style="background: linear-gradient(45deg, #ff69b4, #32cd32);">
+                {{ video.title }}
+              </div>
 
-              <div class="mt-auto gap-2">
-                <a href="{{ video.youtube_url }}" target="_blank" class="btn btn-sm btn-outline-primary w-10">На YouTube</a>
-                <form method="post" action="{% url 'videos:toggle_favorite' video.id %}" class="w-10">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-danger w-100">Удалить из избранного</button>
-                </form>
+              {% if video.youtube_url %}
+                <div class="ratio ratio-16x9">
+                  <iframe
+                    src="https://www.youtube.com/embed/{{ video.youtube_url|youtube_id }}"
+                    title="{{ video.title }}"
+                    allowfullscreen
+                    class="rounded-bottom-0 border-0">
+                  </iframe>
+                </div>
+              {% endif %}
+
+              <div class="card-body d-flex flex-column">
+                <p class="text-muted">{{ video.description|truncatechars:100 }}</p>
+                <p><strong>Автор:</strong> {{ video.author }}</p>
+                <p><strong>Категория:</strong> {{ video.category }}</p>
+                <p><strong>Теги:</strong> {{ video.tags }}</p>
+
+                <div class="mt-auto d-flex justify-content-between">
+                  <a href="{{ video.youtube_url }}" target="_blank" class="btn btn-outline-primary btn-sm w-50 me-2">▶ YouTube</a>
+                  <form method="post" action="{% url 'videos:toggle_favorite' video.id %}" class="w-50">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm w-100">🗑 Удалить</button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="alert alert-warning">
-      У вас пока нет избранных видео.
-    </div>
-  {% endif %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-warning text-center mt-4">
+        У вас пока нет избранных видео.
+      </div>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}

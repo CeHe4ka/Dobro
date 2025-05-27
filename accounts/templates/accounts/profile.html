@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
+{% load form_tags %}
 
 {% block content %}
 <div class="container mt-4">
-  <h1 class="mb-4">👤 Профиль пользователя</h1>
+  <h1 class="mb-4 text-center text-gradient">
+    <i class="bi bi-person-fill"></i> Профиль пользователя
+  </h1>
 
   {% if messages %}
     {% for message in messages %}
@@ -10,33 +13,64 @@
     {% endfor %}
   {% endif %}
 
-  <div class="row">
+  <div class="row g-4">
     <!-- Личные данные -->
     <div class="col-md-6">
-      <h4>Редактирование личных данных</h4>
-      <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-      </form>
+      <div class="p-4 rounded shadow-sm border border-info bg-light-subtle">
+        <h5 class="mb-3 text-info fw-bold">
+          <i class="bi bi-pencil-fill me-2"></i>Редактирование личных данных
+        </h5>
+        <form method="post" class="needs-validation" novalidate>
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="form-floating mb-3">
+              {{ field|add_class:"form-control" }}
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {% if field.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ field.errors|striptags }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-success w-100">
+            💾 Сохранить
+          </button>
+        </form>
+      </div>
     </div>
 
-    <!-- Пароль -->
+    <!-- Смена пароля -->
     <div class="col-md-6">
-      <h4>Сменить пароль</h4>
-      <form method="post">
-        {% csrf_token %}
-        {{ password_form.as_p }}
-        <button type="submit" class="btn btn-warning">Обновить пароль</button>
-      </form>
+      <div class="p-4 rounded shadow-sm border border-warning bg-light-subtle">
+        <h5 class="mb-3 text-warning fw-bold">
+          <i class="bi bi-lock-fill me-2"></i>Сменить пароль
+        </h5>
+        <form method="post" class="needs-validation" novalidate>
+          {% csrf_token %}
+          {% for field in password_form %}
+            <div class="form-floating mb-3">
+              {{ field|add_class:"form-control" }}
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {% if field.errors %}
+                <div class="invalid-feedback d-block">
+                  {{ field.errors|striptags }}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-warning w-100">
+            🔁 Обновить пароль
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 
+  <!-- Оцененные видео -->
   <hr class="my-4">
-
-  <!-- Оценённые видео -->
   <div class="mt-4">
-    <h4>⭐ Оцененные видео</h4>
+    <h4 class="mb-3">⭐ Оценённые видео</h4>
     {% if ratings %}
       <ul class="list-group">
         {% for r in ratings %}
@@ -45,7 +79,9 @@
               <strong>{{ r.video.title }}</strong><br>
               <small>{{ r.get_value_display }}</small>
             </div>
-            <a href="{% url 'videos:remove_rating' r.video.id %}" class="btn btn-sm btn-outline-danger">Удалить</a>
+            <a href="{% url 'videos:remove_rating' r.video.id %}" class="btn btn-sm btn-outline-danger">
+              Удалить
+            </a>
           </li>
         {% endfor %}
       </ul>
@@ -54,4 +90,17 @@
     {% endif %}
   </div>
 </div>
+
+<style>
+  .form-control:focus {
+    border-color: #0dcaf0;
+    box-shadow: 0 0 0 0.2rem rgba(13, 202, 240, 0.25);
+    transition: all 0.3s ease;
+  }
+  .text-gradient {
+    background: -webkit-linear-gradient(45deg, #6f42c1, #d63384);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+</style>
 {% endblock %}

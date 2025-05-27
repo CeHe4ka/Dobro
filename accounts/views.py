@@ -1,4 +1,4 @@
-from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth import login, update_session_auth_hash, authenticate
 from django.contrib.auth.forms import PasswordChangeForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -48,3 +48,15 @@ def profile(request):
         'password_form': password_form,
         'ratings': ratings
     })
+def login_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=email, password=password)  # username=email!
+        if user is not None:
+            login(request, user)
+            return redirect('accounts:dashboard')  # ← перенаправление после входа
+        else:
+            messages.error(request, 'Неверные email или пароль')
+            return redirect('accounts:login')  # ← ошибка = вернёмся обратно
+    return render(request, 'accounts/login.html')
