@@ -7,9 +7,15 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'birth_date', 'first_name', 'last_name']  # username обязательно
+    REQUIRED_FIELDS = []  # username обязательно
 
     def __str__(self):
         return self.email
+
+    class Meta:
+        permissions = [
+            ("can_export_users", "Can export users to Excel"),
+        ]
+
 
 # Create your models here.

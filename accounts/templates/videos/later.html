@@ -1,0 +1,65 @@
+{% load static %}
+{% load video_filters %} {# Для фильтра youtube_id #}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Посмотреть позже</title>
+  <link rel="stylesheet" href="{% static 'styles/fonts.css' %}" />
+  <link rel="stylesheet" href="{% static 'styles/variables.css' %}" />
+  <link rel="stylesheet" href="{% static 'styles/style-later.css' %}" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</head>
+<body>
+  <section class="sidebar">
+    <nav class="sidebar__nav">
+      <ul class="sidebar__list">
+        <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
+        <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span></li>
+        <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span></li>
+        <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История просмотров</a></span></li>
+        <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Посмотреть позже</a></span></li>
+        <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span></li>
+      </ul>
+    </nav>
+  </section>
+
+  <section class="main">
+    <div class="top-bar">
+      <h1 class="header">Посмотреть позже</h1>
+    </div>
+
+    <div class="video-grid">
+      {% for item in video_data %}
+        {% with video=item.video %}
+          <div class="video-card">
+            <img src="https://img.youtube.com/vi/{{ video.youtube_url|youtube_id }}/hqdefault.jpg" alt="{{ video.title }}" />
+            <div class="info">
+              <h4>{{ video.title }}</h4>
+              <span>{{ video.category }}</span>
+              <div class="video-info">
+                <i class="material-icons" onclick="toggleFavorite({{ video.id }}, this)">
+                  {% if item.is_favorite %}favorite{% else %}favorite_border{% endif %}
+                </i>
+                <i class="material-icons" onclick="rateVideo({{ video.id }}, 'like', this)">
+                  {% if item.has_liked %}thumb_up{% else %}thumb_up_off_alt{% endif %}
+                </i>
+                <i class="material-icons" onclick="toggleWatchLater({{ video.id }}, this)">
+                  watch_later
+                </i>
+              </div>
+              <a class="btn btn-card" href="https://www.youtube.com/watch?v={{ video.youtube_url|youtube_id }}" target="_blank" rel="noopener noreferrer">Смотреть</a>
+            </div>
+          </div>
+        {% endwith %}
+      {% empty %}
+        <p>Нет видео в списке "Посмотреть позже".</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <script src="{% static 'script/script-favourites.js' %}"></script>
+</body>
+</html>

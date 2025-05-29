@@ -5,6 +5,11 @@ from .models import ViewLog
 from django.db.models import Q
 from .models import Favorite
 from .models import Rating
+from django.http import JsonResponse
+from .models import WatchLater
+from django.utils import timezone
+
+
 @login_required
 def video_catalog(request):
     query = request.GET.get('q', '')
@@ -51,17 +56,14 @@ def view_history(request):
 @login_required
 def open_video(request, video_id):
     video = get_object_or_404(Video, pk=video_id)
-    ViewLog.objects.create(user=request.user, video=video)
+    ViewLog.objects.update_or_create(
+        user=request.user,
+        video=video,
+        defaults={'viewed_at': timezone.now()},
+    )
     return redirect(video.youtube_url)
 
-@login_required
-def toggle_favorite(request, video_id):
-    video = get_object_or_404(Video, pk=video_id)
-    favorite, created = Favorite.objects.get_or_create(user=request.user, video=video)
 
-    if not created:
-        favorite.delete()  # если уже в избранном — убираем
-    return redirect('videos:catalog')
 
 
 @login_required
@@ -74,12 +76,16 @@ def favorites(request):
 def rate_video(request, video_id, value):
     video = get_object_or_404(Video, pk=video_id)
     if value not in ['like', 'dislike']:
-        return redirect('videos:catalog')
+        from django.http import JsonResponse
+
+        return JsonResponse({'status': 'ok'})
 
     rating, created = Rating.objects.get_or_create(user=request.user, video=video)
     rating.value = value
     rating.save()
-    return redirect('videos:catalog')
+    from django.http import JsonResponse
+
+    return JsonResponse({'status': 'ok'})
 
 
 @login_required
@@ -88,3 +94,132 @@ def remove_rating(request, video_id):
     return redirect('accounts:profile')
 
 
+@login_required
+def later(request):
+    user = request.user
+    watch_later_entries = WatchLater.objects.filter(user=user).select_related('video')
+
+    video_data = []
+    for entry in watch_later_entries:
+        video = entry.video
+        is_favorite = Favorite.objects.filter(user=user, video=video).exists()
+        has_liked = Rating.objects.filter(user=user, video=video, value='like').exists()
+        video_data.append({
+            'video': video,
+            'is_favorite': is_favorite,
+            'has_liked': has_liked,
+        })
+
+    return render(request, "videos/later.html", {"video_data": video_data})
+
+@login_required
+def youtube_id(value):
+    """Извлекает ID из полной ссылки на YouTube"""
+    match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11}).*", value)
+    return match.group(1) if match else value
+
+def catalog_view(request):
+    return render(request, 'catalog.html')
+
+@login_required
+def watch_later_view(request):
+    videos = request.user.watch_later.all()
+
+    video_data = []
+    for video in videos:
+        is_favorite = video in request.user.favorite_videos.all()
+        has_liked = video.rating_set.filter(user=request.user, value='like').exists()
+        video_data.append({
+            'video': video,
+            'is_favorite': is_favorite,
+            'has_liked': has_liked,
+        })
+
+    return render(request, 'videos/later.html', {
+        'video_data': video_data,
+    })
+
+
+@login_required
+def toggle_watch_later(request):
+    if request.method == "POST":
+        try:
+            video_id = request.POST.get("video_id")
+            video = get_object_or_404(Video, id=video_id)
+
+            watch_later_obj = WatchLater.objects.filter(user=request.user, video=video).first()
+            if watch_later_obj:
+                watch_later_obj.delete()
+                return JsonResponse({"status": "ok", "watch_later": False})
+            else:
+                WatchLater.objects.create(user=request.user, video=video, added_at=timezone.now())
+                return JsonResponse({"status": "ok", "watch_later": True})
+        except Exception as e:
+            # Возвращаем ошибку в JSON, чтобы увидеть в браузере
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+
+@login_required
+def watch_later_list(request):
+    videos = [wl.video for wl in WatchLater.objects.filter(user=request.user).select_related('video')]
+    return render(request, 'videos/later.html', {'videos': videos})
+
+
+def is_watch_later(request, video_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'watch_later': False})
+    try:
+        video = Video.objects.get(id=video_id)
+        exists = WatchLater.objects.filter(user=request.user, video=video).exists()
+        return JsonResponse({'watch_later': exists})
+    except Video.DoesNotExist:
+        return JsonResponse({'watch_later': False})
+
+@login_required
+def watch_video(request, video_id):
+    video = get_object_or_404(Video, id=video_id)
+
+    # Сохраняем факт просмотра
+    ViewLog.objects.update_or_create(
+        user=request.user,
+        video=video,
+        defaults={'viewed_at': timezone.now()},
+    )
+
+
+    return render(request, 'videos/watch_video.html', {'video': video})
+
+
+@login_required
+def history_view(request):
+    history = ViewLog.objects.filter(user=request.user).select_related('video').order_by('-viewed_at')
+    return render(request, 'videos/history.html', {'history': history})
+
+
+@login_required
+def toggle_favorite(request, video_id):
+    user = request.user
+    video = Video.objects.get(id=video_id)
+
+    rating, created = Rating.objects.get_or_create(user=user, video=video)
+
+    if rating.is_favorite:
+        rating.is_favorite = False
+        rating.save()
+        return JsonResponse({'status': 'ok', 'is_favorite': False})
+    else:
+        rating.is_favorite = True
+        rating.save()
+        return JsonResponse({'status': 'ok', 'is_favorite': True})
+
+
+@login_required
+def is_favorite(request, video_id):
+    user = request.user
+    video = Video.objects.get(id=video_id)
+
+    try:
+        rating = Rating.objects.get(user=user, video=video)
+        return JsonResponse({'is_favorite': rating.is_favorite})
+    except Rating.DoesNotExist:
+        return JsonResponse({'is_favorite': False})

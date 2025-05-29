@@ -1,106 +1,97 @@
-{% extends 'base.html' %}
-{% load form_tags %}
-
-{% block content %}
-<div class="container mt-4">
-  <h1 class="mb-4 text-center text-gradient">
-    <i class="bi bi-person-fill"></i> Профиль пользователя
-  </h1>
-
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
-
-  <div class="row g-4">
-    <!-- Личные данные -->
-    <div class="col-md-6">
-      <div class="p-4 rounded shadow-sm border border-info bg-light-subtle">
-        <h5 class="mb-3 text-info fw-bold">
-          <i class="bi bi-pencil-fill me-2"></i>Редактирование личных данных
-        </h5>
-        <form method="post" class="needs-validation" novalidate>
-          {% csrf_token %}
-          {% for field in form %}
-            <div class="form-floating mb-3">
-              {{ field|add_class:"form-control" }}
-              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-              {% if field.errors %}
-                <div class="invalid-feedback d-block">
-                  {{ field.errors|striptags }}
-                </div>
-              {% endif %}
-            </div>
-          {% endfor %}
-          <button type="submit" class="btn btn-success w-100">
-            💾 Сохранить
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Смена пароля -->
-    <div class="col-md-6">
-      <div class="p-4 rounded shadow-sm border border-warning bg-light-subtle">
-        <h5 class="mb-3 text-warning fw-bold">
-          <i class="bi bi-lock-fill me-2"></i>Сменить пароль
-        </h5>
-        <form method="post" class="needs-validation" novalidate>
-          {% csrf_token %}
-          {% for field in password_form %}
-            <div class="form-floating mb-3">
-              {{ field|add_class:"form-control" }}
-              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-              {% if field.errors %}
-                <div class="invalid-feedback d-block">
-                  {{ field.errors|striptags }}
-                </div>
-              {% endif %}
-            </div>
-          {% endfor %}
-          <button type="submit" class="btn btn-warning w-100">
-            🔁 Обновить пароль
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Оцененные видео -->
-  <hr class="my-4">
-  <div class="mt-4">
-    <h4 class="mb-3">⭐ Оценённые видео</h4>
-    {% if ratings %}
-      <ul class="list-group">
-        {% for r in ratings %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-              <strong>{{ r.video.title }}</strong><br>
-              <small>{{ r.get_value_display }}</small>
-            </div>
-            <a href="{% url 'videos:remove_rating' r.video.id %}" class="btn btn-sm btn-outline-danger">
-              Удалить
-            </a>
-          </li>
-        {% endfor %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Профиль</title>
+  <link rel="stylesheet" href="{% static 'styles/fonts.css' %}" />
+  <link rel="stylesheet" href="{% static 'styles/variables.css' %}" />
+  <link rel="stylesheet" href="{% static 'styles/style-profile.css' %}" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</head>
+<body>
+  <section class="sidebar">
+    <nav class="sidebar__nav">
+      <ul class="sidebar__list">
+        <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
+        <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span></li>
+        <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span></li>
+        <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История</a></span></li>
+        <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Позже</a></span></li>
+        <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span></li>
       </ul>
-    {% else %}
-      <p>Вы ещё не оценивали видео.</p>
-    {% endif %}
+    </nav>
+  </section>
+
+  <section class="main">
+    <h1 class="profile-title">Профиль пользователя</h1>
+    <div class="profile-card">
+      <img class="profile-photo" src="{ static 'img/avatar-placeholder.png' %}" alt="Аватар" />
+      <div class="profile-info">
+        <p><strong>ФИО:</strong> Иванов Иван Иванович</p>
+        <p><strong>Дата рождения:</strong> 01.01.1990</p>
+        <p><strong>Email:</strong> ivanov@example.com</p>
+        <button class="btn btn-edit" onclick="openEditModal()">Редактировать</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Модальное окно редактирования -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <h2>Редактировать профиль</h2>
+    <form class="edit-form">
+      <label>Фото: <input type="file" /></label>
+      <label>ФИО: <input type="text" value="Иванов Иван Иванович" /></label>
+      <label>Дата рождения: <input type="date" value="1990-01-01" /></label>
+      <label>Email: <input type="email" value="ivanov@example.com" /></label>
+      <label>Пароль: <input type="password" value="12345678" disabled /></label>
+      <button type="button" class="btn" onclick="openPasswordModal()">Изменить пароль</button>
+      <div class="buttons">
+        <button type="button" onclick="closeEditModal()">Отмена</button>
+        <button type="submit">Сохранить</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- Модальное окно смены пароля -->
+<div class="modal" id="passwordModal">
+  <div class="modal-content">
+    <h2>Смена пароля</h2>
+    <form class="edit-form">
+      <label>Старый пароль: <input type="password" required /></label>
+      <label>Новый пароль: <input type="password" required /></label>
+      <label>Повторите новый пароль: <input type="password" required /></label>
+      <div class="buttons">
+        <button type="button" onclick="closePasswordModal()">Отмена</button>
+        <button type="submit">Подтвердить</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<style>
-  .form-control:focus {
-    border-color: #0dcaf0;
-    box-shadow: 0 0 0 0.2rem rgba(13, 202, 240, 0.25);
-    transition: all 0.3s ease;
+
+
+  <script>
+  function openEditModal() {
+    document.getElementById('editModal').style.display = 'flex';
   }
-  .text-gradient {
-    background: -webkit-linear-gradient(45deg, #6f42c1, #d63384);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+
+  function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
   }
-</style>
-{% endblock %}
+
+  function openPasswordModal() {
+    closeEditModal();
+    document.getElementById('passwordModal').style.display = 'flex';
+  }
+
+  function closePasswordModal() {
+    document.getElementById('passwordModal').style.display = 'none';
+    openEditModal();
+  }
+</script>
+
+</body>
+</html>
