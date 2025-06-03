@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Видео платформа</title>
-    <link rel="stylesheet" href="{% static 'styles/fonts.css' %}"/>
+    <link rel="stylesheet" href="{% static 'fonts/fonts.css' %}"/>
     <link rel="stylesheet" href="{% static 'styles/variables.css' %}"/>
     <link rel="stylesheet" href="{% static 'styles/style-favourites.css' %}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
@@ -56,8 +56,9 @@
             <div class="info">
                 <h4>{{ video.title }}</h4>
                 <span>{{ video.category }}</span>
-                <button class="btn btn-card"
-                        onclick="openModal(
+                <div class="card-actions">
+                    <button class="btn btn-card"
+                            onclick="openModal(
             '{{ video.title }}',
             'https://img.youtube.com/vi/{{ video.youtube_url|youtube_id }}/hqdefault.jpg',
             '{{ video.year }}',
@@ -68,12 +69,15 @@
             'https://www.youtube.com/watch?v={{ video.youtube_url|youtube_id }}',
             {{ video.id }}
         )">
-                    Подробнее
-                </button>
+                        Подробнее
+                    </button>
+
+
+                </div>
             </div>
         </div>
         {% empty %}
-        <p>Нет избранных видео.</p>
+        <p>Нет доступных видео.</p>
         {% endfor %}
     </div>
 
@@ -88,12 +92,20 @@
             <p><strong>Длительность:</strong> <span id="modalDuration"></span></p>
             <div class="modal-actions">
                 <i class="material-icons" title="Лайк">thumb_up</i>
-                <i class="material-icons" title="Избранное">star_border</i>
-                <i class="material-icons" id="modalWatchLaterBtn" title="Смотреть позже">watch_later</i>
+                <i class="material-icons"
+                   id="modalFavoriteBtn"
+                   title="Избранное">
+                    star_border
+                </i>
+                <i class="material-icons"
+                   id="modalWatchLaterBtn"
+                   title="Смотреть позже">
+                    watch_later
+                </i>
             </div>
             <div class="buttons">
-                <button onclick="closeModal()">Закрыть</button>
-                <button>Смотреть фильм</button>
+                <button id="modalCloseButton">Закрыть</button>
+                <a id="modalWatchButton" class="btn">Смотреть</a>
             </div>
         </div>
     </div>

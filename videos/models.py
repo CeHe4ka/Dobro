@@ -35,8 +35,9 @@ class Favorite(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.user.email} - избранное: {self.video.title}"
+    def str(self):
+        return f"{self.user} - избранное: {self.video}"
+
 class ViewLog(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)

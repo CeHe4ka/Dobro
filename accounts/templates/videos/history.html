@@ -7,21 +7,26 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>История Просмотров</title>
-    <link rel="stylesheet" href="{% static 'styles/fonts.css' %}"/>
+    <link rel="stylesheet" href="{% static 'fonts/fonts.css' %}"/>
     <link rel="stylesheet" href="{% static 'styles/variables.css' %}"/>
     <link rel="stylesheet" href="{% static 'styles/style-history.css' %}"/>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 </head>
 <body>
 <section class="sidebar">
     <nav class="sidebar__nav">
         <ul class="sidebar__list">
             <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
-            <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span></li>
-            <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span></li>
-            <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История просмотров</a></span></li>
-            <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Посмотреть позже</a></span></li>
-            <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span></li>
+            <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История просмотров</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Посмотреть позже</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span>
+            </li>
         </ul>
     </nav>
 </section>
@@ -33,20 +38,32 @@
     <div class="history-section">
         {% for entry in history %}
         <div class="history-card">
-            <div class="date">{{ entry.viewed_at|date:"d E Y H:i" }}</div>
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="date">{{ entry.viewed_at|date:"d E Y H:i" }}</div>
+                <span class="material-icons delete-icon" title="Удалить" onclick="removeEntry(this)">close</span>
+            </div>
             <ul>
                 <li>
                     <strong>{{ entry.video.title }}</strong><br/>
-                    <a href="{% url 'videos:watch' entry.video.id %}" class="btn-link">▶ Смотреть</a> |
-                    <a href="{{ entry.video.youtube_url }}" target="_blank">YouTube</a>
+                    <a href="{% url 'videos:watch' entry.video.id %}" class="action-btn">▶ Смотреть</a>
                 </li>
             </ul>
         </div>
         {% endfor %}
     </div>
     {% else %}
-        <p style="padding: 20px; color: gray;">Вы пока не смотрели ни одного видео.</p>
+    <p style="padding: 20px; color: gray;">Вы пока не смотрели ни одного видео.</p>
     {% endif %}
 </div>
+
+<script>
+    function removeEntry(el) {
+        const card = el.closest('.history-card');
+        if (card) {
+            card.remove();
+        }
+    }
+</script>
+
 </body>
 </html>

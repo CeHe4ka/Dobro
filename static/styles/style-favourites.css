@@ -118,9 +118,7 @@ body {
     transition: background-color 0.3s;
 }
 
-.btn:hover {
-    background-color: var(--dark-aacent-color);
-}
+
 
 .btn-search {
     background-color: var(--accent-color);
@@ -251,7 +249,7 @@ body {
     justify-content: space-between;
 }
 
-.modal-content button {
+.modal-content button, .modal-content a {
     padding: 10px 20px;
     border: none;
     border-radius: 8px;
@@ -259,8 +257,21 @@ body {
     background-color: var(--accent-color);
     color: var(--main-color);
     transition: background-color 0.3s;
+    text-decoration: none;
 }
 
-.modal-content button:hover {
+.modal-content button:hover, .modal-content a:hover {
     background-color: var(--dark-aacent-color);
+}
+
+.material-icons.active {
+  color: orange;
+}
+
+.material-icons.active-favorite {
+  color: orange;
+}
+
+.material-icons.active-watch-later {
+  color: orange;
 }

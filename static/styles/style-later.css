@@ -186,8 +186,46 @@ body {
     font-size: 0.9em;
 }
 
-.video-info i {
-      color: red;
+.video-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.video-info i:hover {
+  color: orange;
+  transform: scale(1.1);
+}
+
+
+
+.material-icons.active-favorite {
+  color: orange;
+}
+
+.material-icons.active-watch-later {
+  color: orange;
+}
+
+.material-icons.favorite-btn,
+.material-icons.watch-later-btn {
+  pointer-events: auto !important;
+  cursor: pointer;
+  z-index: 10;
+  position: relative; /* чтобы z-index сработал */
+}
+
+.material-icons.active-favorite,
+.material-icons.active-watch-later,
+.material-icons.btn-like.active {
+  color: orange;
+  transform: scale(1.2);
+}
+
+.material-icons {
+  transition: color 0.3s ease, transform 0.2s ease;
 }
 
 /* .modal {

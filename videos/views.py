@@ -5,7 +5,7 @@ from .models import ViewLog
 from django.db.models import Q
 from .models import Favorite
 from .models import Rating
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 from .models import WatchLater
 from django.utils import timezone
 
@@ -198,28 +198,22 @@ def history_view(request):
 
 @login_required
 def toggle_favorite(request, video_id):
-    user = request.user
-    video = Video.objects.get(id=video_id)
-
-    rating, created = Rating.objects.get_or_create(user=user, video=video)
-
-    if rating.is_favorite:
-        rating.is_favorite = False
-        rating.save()
-        return JsonResponse({'status': 'ok', 'is_favorite': False})
-    else:
-        rating.is_favorite = True
-        rating.save()
+    if request.method == 'POST':
+        video = get_object_or_404(Video, id=video_id)
+        favorite, created = Favorite.objects.get_or_create(user=request.user, video=video)
+        if not created:
+            favorite.delete()
+            return JsonResponse({'status': 'ok', 'is_favorite': False})
         return JsonResponse({'status': 'ok', 'is_favorite': True})
-
+    return HttpResponseBadRequest("Invalid method")
 
 @login_required
 def is_favorite(request, video_id):
     user = request.user
-    video = Video.objects.get(id=video_id)
-
     try:
-        rating = Rating.objects.get(user=user, video=video)
-        return JsonResponse({'is_favorite': rating.is_favorite})
-    except Rating.DoesNotExist:
+        video = Video.objects.get(id=video_id)
+        is_favorite = Favorite.objects.filter(user=user, video=video).exists()
+        return JsonResponse({'is_favorite': is_favorite})
+    except Video.DoesNotExist:
         return JsonResponse({'is_favorite': False})
+

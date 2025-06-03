@@ -6,6 +6,10 @@ from django.utils.translation import gettext_lazy as _
 import uuid
 from datetime import date
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import PasswordChangeForm
+from django.forms.widgets import DateInput
+
+
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'input'}))
@@ -61,3 +65,20 @@ class EmailAuthenticationForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'birth_date', 'email']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'Введите имя'}),
+            'last_name': forms.TextInput(attrs={'class': 'input', 'placeholder': 'Введите фамилию'}),
+            'birth_date': DateInput(attrs={'type': 'date', 'class': 'input'}, format='%Y-%m-%d'),
+            'email': forms.EmailInput(attrs={'class': 'input'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Привести дату в ISO-формат, если уже есть значение
+        if self.instance and self.instance.birth_date:
+            self.initial['birth_date'] = self.instance.birth_date.strftime('%Y-%m-%d')

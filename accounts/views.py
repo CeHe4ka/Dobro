@@ -3,9 +3,11 @@ from django.contrib.auth.forms import PasswordChangeForm, AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import RegistrationForm, EmailAuthenticationForm
+from .forms import RegistrationForm, EmailAuthenticationForm, ProfileUpdateForm
 from videos.models import Rating
 from videos.models import Video  # Импорт модели видео
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 
 @login_required
 def dashboard(request):
@@ -80,4 +82,41 @@ def login_register_view(request):
         'form': form,
         'register_form': registration_form,
         'active_form': active_form,
+    })
+
+@login_required
+def profile_view(request):
+    user = request.user
+
+    if request.method == 'POST':
+        if 'change_profile' in request.POST:
+            form = ProfileUpdateForm(request.POST, instance=user)
+            password_form = PasswordChangeForm(user=user)
+            if form.is_valid():
+                form.save()
+                return redirect('accounts:profile')  # чтобы обновились данные
+
+        elif 'change_password' in request.POST:
+            form = ProfileUpdateForm(instance=user)
+            password_form = PasswordChangeForm(user=user, data=request.POST)
+            if password_form.is_valid():
+                password_form.save()
+                return redirect('accounts:profile')
+
+        elif 'change_avatar' in request.POST:
+            form = ProfileUpdateForm(instance=user)
+            password_form = PasswordChangeForm(user=user)
+            avatar = request.FILES.get('avatar')
+            if avatar:
+                user.avatar = avatar
+                user.save()
+            return redirect('accounts:profile')
+
+    else:
+        form = ProfileUpdateForm(instance=user)
+        password_form = PasswordChangeForm(user=user)
+
+    return render(request, 'accounts/profile.html', {
+        'form': form,
+        'password_form': password_form,
     })

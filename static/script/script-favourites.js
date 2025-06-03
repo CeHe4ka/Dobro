@@ -1,14 +1,5 @@
 function openModal(title, image, year, description, age, category, duration, watchUrl, videoId) {
-  console.log("openModal вызван с параметрами:");
-  console.log("title:", title);
-  console.log("image:", image);
-  console.log("year:", year);
-  console.log("description:", description);
-  console.log("age:", age);
-  console.log("category:", category);
-  console.log("duration:", duration);
-  console.log("watchUrl:", watchUrl);
-  console.log("videoId:", videoId);
+  console.log("openModal вызван с параметрами:", title, image, year, description, age, category, duration, watchUrl, videoId);
 
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalImage').src = image;
@@ -22,39 +13,47 @@ function openModal(title, image, year, description, age, category, duration, wat
   watchButton.href = `/videos/watch/${videoId}/`;
   watchButton.textContent = "Смотреть";
 
-  // Сброс обработчиков и установка новых
+  // Обновление и логика для "Смотреть позже"
   const watchLaterIcon = document.getElementById("modalWatchLaterBtn");
+  if (watchLaterIcon) {
+    const newWatchLaterIcon = watchLaterIcon.cloneNode(true);
+    watchLaterIcon.replaceWith(newWatchLaterIcon);
+
+    newWatchLaterIcon.onclick = function () {
+      toggleWatchLater(videoId, this);
+    };
+
+    fetch(`/videos/is_watch_later/${videoId}/`)
+      .then(res => res.json())
+      .then(data => {
+        newWatchLaterIcon.classList.toggle("active-watch-later", data.watch_later);
+      });
+  }
+
+  // Обновление и логика для "Избранное"
   const favoriteIcon = document.getElementById("modalFavoriteBtn");
+  if (favoriteIcon) {
+    const newFavoriteIcon = favoriteIcon.cloneNode(true);
+    favoriteIcon.replaceWith(newFavoriteIcon);
 
-  watchLaterIcon.replaceWith(watchLaterIcon.cloneNode(true));
-  favoriteIcon.replaceWith(favoriteIcon.cloneNode(true));
+    newFavoriteIcon.onclick = function () {
+      toggleFavorite(videoId, this);
+    };
 
-  const newWatchLaterIcon = document.getElementById("modalWatchLaterBtn");
-  const newFavoriteIcon = document.getElementById("modalFavoriteBtn");
-
-  newWatchLaterIcon.onclick = function () {
-    toggleWatchLater(videoId, this);
-  };
-  newFavoriteIcon.onclick = function () {
-    toggleFavorite(videoId, this);
-  };
-
-  // Статус "Смотреть позже"
-  fetch(`/videos/is_watch_later/${videoId}/`)
-    .then(response => response.json())
-    .then(data => {
-      newWatchLaterIcon.classList.toggle("active", data.watch_later === true);
-    });
-
-  // Статус "Избранное"
-  fetch(`/videos/favorite/${videoId}/`)
-    .then(res => res.json())
-    .then(data => {
-      newFavoriteIcon.textContent = data.is_favorite ? "star" : "star_border";
-      newFavoriteIcon.classList.toggle("active", data.is_favorite);
-    });
+    fetch(`/videos/is_favorite/${videoId}/`)
+      .then(res => res.json())
+      .then(data => {
+        newFavoriteIcon.textContent = data.is_favorite ? "star" : "star_border";
+        newFavoriteIcon.classList.toggle("active-favorite", data.is_favorite);
+      });
+  }
 
   document.getElementById('videoModal').style.display = 'flex';
+
+  const closeButton = document.getElementById('modalCloseButton');
+  if (closeButton) {
+    closeButton.onclick = closeModal;
+  }
 }
 
 function closeModal() {
@@ -73,24 +72,24 @@ function toggleWatchLater(videoId, el) {
     .then(response => response.json())
     .then(data => {
       if (data.status === "ok") {
-        el.classList.toggle("active", data.watch_later);
+        el.classList.toggle("active-watch-later", data.watch_later);
       }
     });
 }
 
 function toggleFavorite(videoId, el) {
-  fetch(`/videos/favorite/${videoId}/`, {
+  fetch(`/videos/toggle_favorite/${videoId}/`, {
     method: "POST",
     headers: {
       "X-CSRFToken": getCookie("csrftoken"),
       "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: `video_id=${videoId}`
+    body: `video_id=${videoId}`,
   })
     .then(res => res.json())
     .then(data => {
       if (data.status === "ok") {
-        el.classList.toggle("active", data.is_favorite);
+        el.classList.toggle("active-favorite", data.is_favorite);
         el.textContent = data.is_favorite ? "star" : "star_border";
       }
     });

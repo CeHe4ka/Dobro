@@ -2,95 +2,168 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Профиль</title>
-  <link rel="stylesheet" href="{% static 'styles/fonts.css' %}" />
-  <link rel="stylesheet" href="{% static 'styles/variables.css' %}" />
-  <link rel="stylesheet" href="{% static 'styles/style-profile.css' %}" />
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Профиль</title>
+    <link rel="stylesheet" href="{% static 'fonts/fonts.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/variables.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/style-profile.css' %}"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 </head>
 <body>
-  <section class="sidebar">
-    <nav class="sidebar__nav">
-      <ul class="sidebar__list">
-        <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
-        <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span></li>
-        <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span></li>
-        <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История</a></span></li>
-        <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Позже</a></span></li>
-        <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span></li>
-      </ul>
-    </nav>
-  </section>
 
-  <section class="main">
+<section class="sidebar">
+    <nav class="sidebar__nav">
+        <ul class="sidebar__list">
+            <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
+            <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Посмотреть позже</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span>
+            </li>
+        </ul>
+    </nav>
+</section>
+
+<section class="main">
     <h1 class="profile-title">Профиль пользователя</h1>
     <div class="profile-card">
-      <img class="profile-photo" src="{ static 'img/avatar-placeholder.png' %}" alt="Аватар" />
-      <div class="profile-info">
-        <p><strong>ФИО:</strong> Иванов Иван Иванович</p>
-        <p><strong>Дата рождения:</strong> 01.01.1990</p>
-        <p><strong>Email:</strong> ivanov@example.com</p>
-        <button class="btn btn-edit" onclick="openEditModal()">Редактировать</button>
-      </div>
+
+        <div class="avatar-wrapper" style="display: flex; flex-direction: column; align-items: center;">
+            {% if user.avatar %}
+            <img class="profile-photo" src="{{ user.avatar.url }}" alt="Аватар"/>
+            {% else %}
+            <img class="profile-photo" src="{% static 'img/avatar.jpg' %}" alt="Аватар"/>
+            {% endif %}
+        </div>
+
+        <div class="profile-info">
+            <p><strong>ФИО:</strong> {{ user.get_full_name }}</p>
+            <p><strong>Дата рождения:</strong> {{ user.birth_date|date:"d.m.Y" }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+
+        <div class="profile-buttons">
+            <button class="btn btn-edit" onclick="openEditModal()">Редактировать</button>
+            <button class="btn btn-avatar" onclick="openAvatarModal()">Сменить аватар</button>
+        </div>
     </div>
-  </section>
+</section>
 
-  <!-- Модальное окно редактирования -->
+<!-- МОДАЛЬНОЕ ОКНО: РЕДАКТИРОВАНИЕ -->
 <div class="modal" id="editModal">
-  <div class="modal-content">
-    <h2>Редактировать профиль</h2>
-    <form class="edit-form">
-      <label>Фото: <input type="file" /></label>
-      <label>ФИО: <input type="text" value="Иванов Иван Иванович" /></label>
-      <label>Дата рождения: <input type="date" value="1990-01-01" /></label>
-      <label>Email: <input type="email" value="ivanov@example.com" /></label>
-      <label>Пароль: <input type="password" value="12345678" disabled /></label>
-      <button type="button" class="btn" onclick="openPasswordModal()">Изменить пароль</button>
-      <div class="buttons">
-        <button type="button" onclick="closeEditModal()">Отмена</button>
-        <button type="submit">Сохранить</button>
-      </div>
-    </form>
-  </div>
+    <div class="modal-content">
+        <h2>Редактировать профиль</h2>
+        <form method="post" class="edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="change_profile" value="1"/>
+
+            <label for="id_first_name">Имя:</label>
+            {{ form.first_name }}
+
+            <label for="id_last_name">Фамилия:</label>
+            {{ form.last_name }}
+
+            <label for="id_birth_date">Дата рождения:</label>
+            {{ form.birth_date }}
+
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+
+            {% if form.errors %}
+            <div class="form-errors">
+                {{ form.errors.as_ul }}
+            </div>
+            {% endif %}
+
+            <div class="buttons">
+                <button type="button" onclick="closeEditModal()">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </div>
+        </form>
+        <button class="btn" style="margin-top: 20px;" onclick="openPasswordModal()">Сменить пароль</button>
+    </div>
 </div>
-<!-- Модальное окно смены пароля -->
+
+<!-- МОДАЛЬНОЕ ОКНО: СМЕНА ПАРОЛЯ -->
 <div class="modal" id="passwordModal">
-  <div class="modal-content">
-    <h2>Смена пароля</h2>
-    <form class="edit-form">
-      <label>Старый пароль: <input type="password" required /></label>
-      <label>Новый пароль: <input type="password" required /></label>
-      <label>Повторите новый пароль: <input type="password" required /></label>
-      <div class="buttons">
-        <button type="button" onclick="closePasswordModal()">Отмена</button>
-        <button type="submit">Подтвердить</button>
-      </div>
-    </form>
-  </div>
+    <div class="modal-content">
+        <h2>Смена пароля</h2>
+        <form method="post" class="edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="change_password" value="1"/>
+
+            <label for="{{ password_form.old_password.id_for_label }}">Текущий пароль:</label>
+            {{ password_form.old_password }}
+
+            <label for="{{ password_form.new_password1.id_for_label }}">Новый пароль:</label>
+            {{ password_form.new_password1 }}
+
+            <label for="{{ password_form.new_password2.id_for_label }}">Повторите новый пароль:</label>
+            {{ password_form.new_password2 }}
+
+            {% if password_form.errors %}
+            <div class="form-errors">
+                {{ password_form.errors.as_ul }}
+            </div>
+            {% endif %}
+
+            <div class="buttons">
+                <button type="button" onclick="closePasswordModal()">Отмена</button>
+                <button type="submit">Подтвердить</button>
+            </div>
+        </form>
+    </div>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО: СМЕНА АВАТАРА -->
+<div class="modal" id="avatarModal">
+    <div class="modal-content">
+        <h2>Сменить аватар</h2>
+        <form method="post" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="change_avatar" value="1"/>
+            <input type="file" name="avatar" accept="image/*" required/>
 
+            <div class="buttons">
+                <button type="button" onclick="closeAvatarModal()">Отмена</button>
+                <button type="submit">Загрузить</button>
+            </div>
+        </form>
+    </div>
+</div>
 
-  <script>
-  function openEditModal() {
-    document.getElementById('editModal').style.display = 'flex';
-  }
+<script>
+    function openEditModal() {
+        document.getElementById('editModal').style.display = 'flex';
+    }
 
-  function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-  }
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
 
-  function openPasswordModal() {
-    closeEditModal();
-    document.getElementById('passwordModal').style.display = 'flex';
-  }
+    function openPasswordModal() {
+        closeEditModal();
+        document.getElementById('passwordModal').style.display = 'flex';
+    }
 
-  function closePasswordModal() {
-    document.getElementById('passwordModal').style.display = 'none';
-    openEditModal();
-  }
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+        openEditModal();
+    }
+
+    function openAvatarModal() {
+        document.getElementById('avatarModal').style.display = 'flex';
+    }
+
+    function closeAvatarModal() {
+        document.getElementById('avatarModal').style.display = 'none';
+    }
 </script>
 
 </body>
