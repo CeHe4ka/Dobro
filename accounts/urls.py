@@ -1,13 +1,17 @@
 from django.urls import path
-from .views import register,profile,dashboard
-from django.contrib.auth.views import LoginView, LogoutView
+from .views import profile, dashboard
+from django.contrib.auth.views import LogoutView
+from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'accounts'
 
 urlpatterns = [
-    path('register/', register, name='register'),
-    path('login/', LoginView.as_view(template_name='accounts/login.html'), name='login'),
+    path('login/', views.login_register_view, name='login'),
     path('logout/', LogoutView.as_view(next_page='accounts:login'), name='logout'),
     path('dashboard/', dashboard, name='dashboard'),
-    path('profile/', profile, name='profile'),
+    path('profile/', views.profile, name='profile'),
+    path('request-editor/', views.request_editor_status, name='request_editor'),
+
 ]

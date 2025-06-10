@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="./fonts/fonts.css">
+    <link rel="stylesheet" href="./styles/globals.css">
+    <link rel="stylesheet" href="./styles/variables.css">
+    <link rel="stylesheet" href="./styles/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+<body>
+    <header class="header">
+        <p class="header-title">Добро</p>
+    </header>
+
+    <main class="container">
+        <div class="form-box">
+            <form action="#" class="LoginForm">
+                <h2>Вход</h2>
+                <div class="input-box">
+                    <input type="text" required>
+                    <label>E-mail</label>
+                    <i class="bx bxs-user"></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" required>
+                    <label>Пароль</label>
+                    <i class="bx bxs-lock-alt"></i>
+                </div>
+                <div class="forget-section">
+                    <p>
+                        <input type="checkbox">
+                        Запомнить меня
+                    </p>
+                    <a class="link-foget" href="#">Забыли пароль ?</a>
+                </div>
+                <button class="btn">Войти</button>
+                <div class="account-creation">
+                    <span>Нет аккаунта ? <a href="#" class="RegisterLink">Зарегистрироваться</a> </span>
+                </div>
+            </form>
+
+            <form action="#" class="RegisterForm">
+                <h2>Регистрация</h2>
+                <div class="input-box">
+                    <input type="text" required>
+                    <label>E-mail</label>
+                    <i class="bx bxs-user"></i>
+                </div>
+                <div class="input-box">
+                    <input type="text" required>
+                    <label>Дата рождения (дд.мм.гггг)</label>
+                    <i class="bx bxs-calendar-alt"></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" required>
+                    <label>Пароль</label>
+                    <i class="bx bxs-lock-alt"></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" required>
+                    <label>Повторите пароль</label>
+                    <i class="bx bxs-lock-alt"></i>
+                </div>
+                <button class="btn">Зарегистрироваться</button>
+                <div class="account-creation">
+                    <span>Есть аккаунт ? <a href="#" class="LoginLink">Войти</a> </span>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="./script/script.js"></script>
+</body>
+</html>

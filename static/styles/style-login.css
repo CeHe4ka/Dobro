@@ -1,0 +1,329 @@
+* {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--main-color);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--back-img) no-repeat;
+    height: 100vh;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    width: 100%;
+    background-color: var(--accent-color);
+}
+
+.header-title {
+    font-weight: var(--fw-bold);
+    font-size: 40px;
+}
+
+
+.container{
+    height: 600px;
+    width: 450px;
+    margin: 60px 0;
+    border: 2px solid var(--light--decor);
+    border-radius: 10px;
+    background: var(--dark-decor);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 5px var(--dark-decor), 0 0 15px var(--dark-decor), 0 0 30px var(--dark-decor);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.form-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-box .LoginForm{
+    position: absolute;
+    transform: translateX(0px) rotate(0deg);
+    transition: .5s ease;
+    transition-delay: .4s;
+}
+
+.form-box .LoginForm.active{
+    transform: translateX(-650px) rotate(-65deg);
+    transition-delay: .2s;
+}
+
+.form-box .RegisterForm{
+    transform: translateX(650px) rotate(65deg);
+    transition: .5s ease;
+    transition-delay: .2s;
+}
+
+.form-box .RegisterForm.active{
+    transform: translateX(0px) rotate(0deg);
+    transition-delay: .4s;
+}
+
+.container .form-box h2{
+    text-align: center;
+    font-size: 38px;
+    font-weight: var(--fw-bold);
+}
+
+.form-box .input-box{
+    margin: 35px 0;
+    width: 330px;
+    border-bottom: 2px solid var(--light--decor);
+    position: relative;
+}
+
+.form-box .input-box input{
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+    height: 40px;
+    padding: 0 35px 0 5px;
+}
+
+.form-box .input-box label{
+    font-weight: var(--fw-norm);
+    letter-spacing: .5px;
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: .5s ease;
+}
+
+.input-box input:focus ~ label, .input-box input:valid ~ label{
+    top: -5px;
+}
+
+.input-box i{
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+}
+
+.forget-section{
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    margin: -15px 0 15px;
+}
+
+.forget-section p{
+    display: flex;
+    align-items: center;
+}
+
+.forget-section p input{
+    accent-color: var(--accent-color);
+    margin: 0 3px;
+}
+
+.forget-section a{
+    text-decoration: none;
+}
+
+.link-foget:hover {
+    text-decoration: underline;
+}
+
+.btn{
+    height: 45px;
+    width: 100%;
+    border-radius: 50px;
+    color: var(--main-color);
+    background: var(--accent-color);
+    border: 2px solid var(--dark-aacent-color);
+    outline: none;
+    font-size: 16px;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+.button-link {
+    text-decoration: none;
+}
+
+.account-creation{
+    text-align: center;
+    margin: 25px 0 10px;
+    font-weight: var(--fw-norm);
+    font-size: 14px;
+}
+
+.account-creation span a{
+    text-decoration: none;
+}
+
+.account-creation a:hover{
+    text-decoration: underline;
+}
+
+@media(width <=768px){
+    .header {
+        height: 45px;
+    }
+
+    .header-title {
+        font-size: 32px;
+    }
+
+    .container{
+        height: 550px;
+        width: 380px;
+        margin: 30px 0;
+    }
+
+    .container .form-box h2{
+        font-size: 32px;
+    }
+
+    .form-box .input-box{
+        margin: 35px 0;
+        width: 300px;
+        
+    }
+
+    .form-box .input-box i{
+        font-size: 18px;        
+    }
+
+    .form-box .input-box label{
+        font-size: 14px;
+    }
+
+    .forget-section{
+        font-size: 13px;
+    }
+    
+    .btn{
+        height: 40px;
+        width: 100%;
+        font-size: 14px;
+    }
+    
+    .account-creation{
+        font-size: 13px;
+    }
+}
+
+@media(width <= 480px){
+    .header {
+        height: 30px;
+    }
+
+    .header-title {
+        font-size: 26px;
+    }
+
+    .container{
+        height: 500px;
+        width: 310px;
+        margin: 10px 0;
+    }
+
+    .container .form-box h2{
+        font-size: 26px;
+    }
+
+    .form-box .input-box{
+        margin: 30px 0;
+        width: 260px;
+        
+    }
+
+    .form-box .input-box i{
+        font-size: 16px;        
+    }
+
+    .form-box .input-box label{
+        font-size: 12px;
+    }
+
+    .forget-section{
+        font-size: 11px;
+    }
+    
+    .forget-section p input{
+        font-size: 11px;
+    }
+    
+    .btn{
+        height: 35px;
+        width: 100%;
+        font-size: 12px;
+    }
+    
+    .account-creation{
+        font-size: 11px;
+    }
+}
+
+@media(width <= 365px){
+    .header {
+        height: 30px;
+    }
+
+    .header-title {
+        font-size: 24px;
+    }
+
+    .container{
+        height: 470px;
+        width: 280px;
+        margin: 10px 0;
+    }
+
+    .container .form-box h2{
+        font-size: 24px;
+    }
+
+    .form-box .input-box{
+        margin: 25px 0;
+        width: 220px;
+        
+    }
+
+    .form-box .input-box i{
+        font-size: 13px;        
+    }
+
+    .form-box .input-box label{
+        font-size: 10px;
+    }
+
+    .forget-section{
+        font-size: 10px;
+    }
+
+    .forget-section p input{
+        font-size: 8px;
+    }
+    
+    .btn{
+        height: 30px;
+        width: 100%;
+        font-size: 11px;
+    }
+    
+    .account-creation{
+        font-size: 10px;
+    }
+}

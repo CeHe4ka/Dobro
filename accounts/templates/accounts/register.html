@@ -1,21 +1,70 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Вход{% endblock %}
 
 {% block content %}
-  <h2>Регистрация</h2>
+<div class="d-flex align-items-center justify-content-center vh-100 bg-dark position-relative">
+    <div class="bg-image" style="background-image: url('https://source.unsplash.com/random/1600x900/?space'); background-size: cover; position: absolute; top: 0; left: 0; height: 100vh; width: 100vw; z-index: -1;"></div>
 
-  {% if form.errors %}
-    <ul style="color:red">
-      {% for field in form %}
-        {% for error in field.errors %}
-          <li>{{ field.label }}: {{ error }}</li>
-        {% endfor %}
-      {% endfor %}
-    </ul>
-  {% endif %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-lg animate__animated animate__fadeInDown">
+                    <div class="card-header bg-dark text-white text-center">
+                        <ul class="nav nav-tabs card-header-tabs justify-content-center">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link active" id="show-login">Войти</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" id="show-register">Зарегистрироваться</a>
+                            </li>
+                        </ul>
+                    </div>
 
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Зарегистрироваться</button>
-  </form>
+                    <div class="card-body p-4">
+                        <!-- Форма входа -->
+                        <form id="form-login" method="post" class="">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email:</label>
+                                <input type="email" name="email" id="email" class="form-control" required autofocus>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Пароль:</label>
+                                <input type="password" name="password" id="password" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Войти</button>
+                        </form>
+
+                        <!-- Форма регистрации -->
+                        <form id="form-register" method="post" class="d-none">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="fullname" class="form-label">Имя:</label>
+                                <input type="text" name="fullname" id="fullname" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="signup-email" class="form-label">Email:</label>
+                                <input type="email" name="signup_email" id="signup-email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="signup-password" class="form-label">Пароль:</label>
+                                <input type="password" name="signup_password" id="signup-password" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirm-password" class="form-label">Подтвердите пароль:</label>
+                                <input type="password" name="confirm_password" id="confirm-password" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">Зарегистрироваться</button>
+                        </form>
+                    </div>
+
+                    <div class="card-footer bg-light text-center">
+                        <small><a href="{% url 'password_reset' %}" class="text-muted">Забыли пароль?</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

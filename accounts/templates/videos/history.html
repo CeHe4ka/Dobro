@@ -1,32 +1,69 @@
-{% extends 'base.html' %}
+{% load static %}
+{% load video_filters %}
 
-{% block content %}
-<div class="container mt-4">
-  <h2 class="mb-4">История просмотров</h2>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>История Просмотров</title>
+    <link rel="stylesheet" href="{% static 'fonts/fonts.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/variables.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/style-history.css' %}"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+</head>
+<body>
+<section class="sidebar">
+    <nav class="sidebar__nav">
+        <ul class="sidebar__list">
+            <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
+            <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История просмотров</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Посмотреть позже</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span>
+            </li>
+        </ul>
+    </nav>
+</section>
 
-  {% if history %}
-    <div class="list-group">
-      {% for entry in history %}
-        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center flex-column flex-md-row">
-          <div class="me-md-4 mb-2 mb-md-0 text-center text-md-start w-100">
-            <h5 class="mb-1">{{ entry.video.title }}</h5>
-            <p class="mb-1 text-muted">
-              Автор: {{ entry.video.author }}<br>
-              Категория: {{ entry.video.category }}<br>
-              Теги: {{ entry.video.tags }}<br>
-              Просмотрено: {{ entry.viewed_at|date:"d.m.Y H:i" }}
-            </p>
-          </div>
-          <div>
-            <a href="{{ entry.video.youtube_url }}" target="_blank" class="btn btn-sm btn-outline-primary">Смотреть на YouTube</a>
-          </div>
+<div class="main-content">
+    <h1 class="header">История просмотров</h1>
+
+    {% if history %}
+    <div class="history-section">
+        {% for entry in history %}
+        <div class="history-card">
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="date">{{ entry.viewed_at|date:"d E Y H:i" }}</div>
+                <span class="material-icons delete-icon" title="Удалить" onclick="removeEntry(this)">close</span>
+            </div>
+            <ul>
+                <li>
+                    <strong>{{ entry.video.title }}</strong><br/>
+                    <a href="{% url 'videos:watch' entry.video.id %}" class="action-btn">▶ Смотреть</a>
+                </li>
+            </ul>
         </div>
-      {% endfor %}
+        {% endfor %}
     </div>
-  {% else %}
-    <div class="alert alert-info mt-4">
-      Вы пока не смотрели ни одного видео.
-    </div>
-  {% endif %}
+    {% else %}
+    <p style="padding: 20px; color: gray;">Вы пока не смотрели ни одного видео.</p>
+    {% endif %}
 </div>
-{% endblock %}
+
+<script>
+    function removeEntry(el) {
+        const card = el.closest('.history-card');
+        if (card) {
+            card.remove();
+        }
+    }
+</script>
+
+</body>
+</html>

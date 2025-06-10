@@ -1,57 +1,341 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Профиль</title>
+    <link rel="stylesheet" href="{% static 'fonts/fonts.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/variables.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/style-profile.css' %}"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+    <style>
+        /* Стили для модалок, если нет в основном CSS */
+        .modal {
+            display: none; /* скрыто по умолчанию */
+            position: fixed;
+            z-index: 9999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 6px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
 
-{% block content %}
-<div class="container mt-4">
-  <h1 class="mb-4">👤 Профиль пользователя</h1>
+<section class="sidebar">
+    <nav class="sidebar__nav">
+        <ul class="sidebar__list">
+            <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
+            <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Посмотреть позже</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span>
+            </li>
+        </ul>
+    </nav>
+</section>
 
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
-  {% endif %}
+<section class="main">
+    <h1 class="profile-title">Профиль пользователя</h1>
+    <div class="profile-card">
 
-  <div class="row">
-    <!-- Личные данные -->
-    <div class="col-md-6">
-      <h4>Редактирование личных данных</h4>
-      <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Сохранить</button>
-      </form>
+        <div class="avatar-wrapper" style="display: flex; flex-direction: column; align-items: center;">
+            {% if user.avatar %}
+            <img class="profile-photo" src="{{ user.avatar.url }}" alt="Аватар"/>
+            {% else %}
+            <img class="profile-photo" src="{% static 'img/avatar.jpg' %}" alt="Аватар"/>
+            {% endif %}
+        </div>
+
+        <div class="profile-info">
+            <p><strong>ФИО:</strong> {{ user.get_full_name }}</p>
+            <p><strong>Дата рождения:</strong> {{ user.birth_date|date:"d.m.Y" }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+
+        <div class="profile-buttons">
+            <button class="btn btn-edit" onclick="openEditModal()">Редактировать</button>
+            <button class="btn btn-avatar" onclick="openAvatarModal()">Сменить аватар</button>
+
+            {% if not user.is_editor %}
+                {% if not user.is_editor_request %}
+                    <form method="post" action="{% url 'accounts:request_editor' %}">
+                        {% csrf_token %}
+                        <button type="button" class="btn btn-editor" onclick="openEditorRequestModal()">Подать заявку на редактора</button>
+
+                    </form>
+                {% else %}
+                    <p class="editor-status">Заявка на статус редактора отправлена</p>
+                {% endif %}
+            {% else %}
+                <button class="btn btn-add-video" onclick="openAddVideoModal()">Добавить видео</button>
+            {% endif %}
+        </div>
     </div>
+</section>
 
-    <!-- Пароль -->
-    <div class="col-md-6">
-      <h4>Сменить пароль</h4>
-      <form method="post">
-        {% csrf_token %}
-        {{ password_form.as_p }}
-        <button type="submit" class="btn btn-warning">Обновить пароль</button>
-      </form>
-    </div>
-  </div>
+<!-- МОДАЛЬНОЕ ОКНО: ЗАЯВКА НА РЕДАКТОРА -->
+<div class="modal" id="editorRequestModal">
+    <div class="modal-content">
+        <h2>Заявка на редактора</h2>
+        <form method="post" class="edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="editor_request" value="1"/>
 
-  <hr class="my-4">
+            <label for="id_social_link">Ссылка на соцсеть:</label>
+            <input type="url" name="social_link" id="id_social_link" required placeholder="https://vk.com/ваш_профиль"/>
 
-  <!-- Оценённые видео -->
-  <div class="mt-4">
-    <h4>⭐ Оцененные видео</h4>
-    {% if ratings %}
-      <ul class="list-group">
-        {% for r in ratings %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-              <strong>{{ r.video.title }}</strong><br>
-              <small>{{ r.get_value_display }}</small>
+            <div class="buttons">
+                <button type="button" onclick="closeEditorRequestModal()">Отмена</button>
+                <button type="submit">Отправить заявку</button>
             </div>
-            <a href="{% url 'videos:remove_rating' r.video.id %}" class="btn btn-sm btn-outline-danger">Удалить</a>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p>Вы ещё не оценивали видео.</p>
-    {% endif %}
-  </div>
+        </form>
+    </div>
 </div>
-{% endblock %}
+
+<!-- МОДАЛЬНОЕ ОКНО: РЕДАКТИРОВАНИЕ -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h2>Редактировать профиль</h2>
+        <form method="post" class="edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="change_profile" value="1"/>
+
+            <label for="id_first_name">Имя:</label>
+            {{ form.first_name }}
+
+            <label for="id_last_name">Фамилия:</label>
+            {{ form.last_name }}
+
+            <label for="id_birth_date">Дата рождения:</label>
+            {{ form.birth_date }}
+
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+
+            {% if form.errors %}
+            <div class="form-errors">
+                {{ form.errors.as_ul }}
+            </div>
+            {% endif %}
+
+            <div class="buttons">
+                <button type="button" onclick="closeEditModal()">Отмена</button>
+                <button type="submit">Сохранить</button>
+            </div>
+        </form>
+        <button class="btn" style="margin-top: 20px;" onclick="openPasswordModal()">Сменить пароль</button>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: СМЕНА ПАРОЛЯ -->
+<div class="modal" id="passwordModal">
+    <div class="modal-content">
+        <h2>Смена пароля</h2>
+        <form method="post" class="edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="change_password" value="1"/>
+
+            <label for="{{ password_form.old_password.id_for_label }}">Текущий пароль:</label>
+            {{ password_form.old_password }}
+
+            <label for="{{ password_form.new_password1.id_for_label }}">Новый пароль:</label>
+            {{ password_form.new_password1 }}
+
+            <label for="{{ password_form.new_password2.id_for_label }}">Повторите новый пароль:</label>
+            {{ password_form.new_password2 }}
+
+            {% if password_form.errors %}
+            <div class="form-errors">
+                {{ password_form.errors.as_ul }}
+            </div>
+            {% endif %}
+
+            <div class="buttons">
+                <button type="button" onclick="closePasswordModal()">Отмена</button>
+                <button type="submit">Подтвердить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: СМЕНА АВАТАРА -->
+<div class="modal" id="avatarModal">
+    <div class="modal-content">
+        <h2>Сменить аватар</h2>
+        <form method="post" enctype="multipart/form-data" class="edit-form">
+            {% csrf_token %}
+            <input type="hidden" name="change_avatar" value="1"/>
+            <input type="file" name="avatar" accept="image/*" required/>
+
+            <div class="buttons">
+                <button type="button" onclick="closeAvatarModal()">Отмена</button>
+                <button type="submit">Загрузить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: УСПЕХ ДОБАВЛЕНИЯ -->
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <h2>Видео отправлено на модерацию</h2>
+        <div class="buttons">
+            <button type="button" onclick="closeSuccessModal()">Закрыть</button>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО: ДОБАВИТЬ ВИДЕО -->
+<div class="modal" id="addVideoModal">
+    <div class="modal-content">
+        <h2>Добавить видео</h2>
+        <form method="post" class="edit-form" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="add_video" value="1"/>
+
+            <label for="id_title">Название:</label>
+            {{ video_form.title }}
+
+            <label for="id_description">Описание:</label>
+            {{ video_form.description }}
+
+            <label for="id_author">Автор:</label>
+            {{ video_form.author }}
+
+            <label for="id_category">Категория:</label>
+            {{ video_form.category }}
+
+            <label for="id_tags">Теги:</label>
+            {{ video_form.tags }}
+            <small style="color: #666;">Разделяй теги запятыми</small>
+
+            <label for="id_youtube_url">Ссылка на YouTube:</label>
+            {{ video_form.youtube_url }}
+
+            <label for="id_duration">Длительность:</label>
+            {{ video_form.duration }}
+
+            <label for="id_age">Возрастная категория:</label>
+            {{ video_form.age }}
+
+            <label for="id_year">Год выпуска:</label>
+            {{ video_form.year }}
+
+            {% if video_form.errors %}
+            <div class="form-errors">
+                {{ video_form.errors.as_ul }}
+            </div>
+            {% endif %}
+
+            <div class="buttons">
+                <button type="button" onclick="closeAddVideoModal()">Отмена</button>
+                <button type="submit">Добавить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Функции для открытия/закрытия модалок
+
+    // Профиль редактирование
+    function openEditModal() {
+        document.getElementById('editModal').style.display = 'flex';
+    }
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+    }
+
+    // Смена пароля
+    function openPasswordModal() {
+        closeEditModal();
+        document.getElementById('passwordModal').style.display = 'flex';
+    }
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+    }
+
+    // Смена аватара
+    function openAvatarModal() {
+        document.getElementById('avatarModal').style.display = 'flex';
+    }
+    function closeAvatarModal() {
+        document.getElementById('avatarModal').style.display = 'none';
+    }
+
+    // Добавление видео (для редакторов)
+    function openAddVideoModal() {
+        document.getElementById('addVideoModal').style.display = 'flex';
+    }
+    function closeAddVideoModal() {
+        document.getElementById('addVideoModal').style.display = 'none';
+    }
+
+    // Закрыть модалку при клике вне содержимого
+    window.onclick = function(event) {
+        const modals = ['editModal', 'passwordModal', 'avatarModal', 'addVideoModal'];
+        modals.forEach(id => {
+            const modal = document.getElementById(id);
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+    function closeSuccessModal() {
+    document.getElementById('successModal').style.display = 'none';
+}
+    function openEditorRequestModal() {
+    document.getElementById('editorRequestModal').style.display = 'flex';
+}
+
+function closeEditorRequestModal() {
+    document.getElementById('editorRequestModal').style.display = 'none';
+}
+
+
+
+</script>
+
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' and message.message == 'Видео успешно добавлено.' %}
+                console.log('Видео успешно добавлено!');
+                document.getElementById('successModal').style.display = 'flex';
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</script>
+
+
+</body>
+</html>

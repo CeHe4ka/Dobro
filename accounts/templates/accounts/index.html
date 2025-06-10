@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Главная страница</title>
+    <link rel="stylesheet" href="./fonts/fonts.css" />
+    <link rel="stylesheet" href="./styles/variables.css" />
+    <link rel="stylesheet" href="./styles/style-index.css" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <section class="sidebar">
+      <nav class="sidebar__nav">
+        <ul class="sidebar__list">
+          <li class="sidebar__item">
+            <span class="sidebar__logo">Добро</span>
+          </li>
+          <li class="sidebar__item">
+            <i class="material-icons">home</i><span>Главная</span>
+          </li>
+          <li class="sidebar__item">
+            <i class="material-icons">star</i
+            ><span><a href="./favourites.html">Избранное</a></span>
+          </li>
+          <li class="sidebar__item">
+            <i class="material-icons">history</i
+            ><span><a href="./history.html">История просмотров</a></span>
+          </li>
+          <li class="sidebar__item">
+            <i class="material-icons">watch_later</i
+            ><span class="text"
+              ><a href="./later.html">Посмотреть позже</a></span
+            >
+          </li>
+          <li class="sidebar__item">
+            <i class="material-icons">person</i
+            ><span><a href="./profile.html">Профиль</a></span>
+          </li>
+          <!-- <li class="sidebar__item"><i class="material-icons">logout</i><span>Выйти</span></li> -->
+        </ul>
+      </nav>
+    </section>
+
+    <section class="main">
+      <div class="top-bar">
+        <div class="search-box">
+          <input type="text" placeholder="Поиск видео..." />
+        </div>
+        <div class="filters">
+          <button class="btn btn-search">Найти</button>
+        </div>
+      </div>
+
+      <div class="video-grid">
+        <div class="video-card">
+          <a
+            href="https://youtu.be/m2rhVO13aoo?si=2OLzuoLIQFbnFwuk"
+            target="_blank"
+            ><img
+              src="./img/avatar.jpg"
+              alt="Обложка фильма Аватар: Путь воды"
+              loading="lazy"
+          /></a>
+
+          <div class="info">
+            <h4>Аватар: Путь воды</h4>
+            <span>2022</span>
+            <button
+                class="btn btn-card"
+                data-title="Аватар: Путь воды"
+                data-img="./img/avatar.jpg"
+                data-year="2022"
+                data-description="Описание фильма"
+                data-age="12+"
+                data-category="фантастика, боевик"
+                data-duration="3 часа 12 минут"
+                data-link="https://www.youtube.com/watch?v=m2rhVO13aoo"
+                onclick="handleClick(this)"
+                >
+                Подробнее
+            </button>
+          </div>
+        </div>
+        
+        <div class="video-card">
+          <a
+            href="https://youtu.be/m2rhVO13aoo?si=2OLzuoLIQFbnFwuk"
+            target="_blank"
+            ><img
+              src="./img/gentelmeen.jpg"
+              alt="Обложка фильма Джентльмены"
+              loading="lazy"
+          /></a>
+
+          <div class="info">
+            <h4>Джентльмены</h4>
+            <span>2019</span>
+            <button
+                class="btn btn-card"
+                data-title="Джентльмены"
+                data-img="./img/gentelmeen.jpg"
+                data-year="2019"
+                data-description="Один ушлый американец ещё со студенческих лет приторговывал наркотиками, а теперь придумал схему нелегального обогащения с использованием поместий обедневшей английской аристократии и очень неплохо на этом разбогател. Другой пронырливый журналист приходит к Рэю, правой руке американца, и предлагает тому купить киносценарий, в котором подробно описаны преступления его босса при участии других представителей лондонского криминального мира — партнёра-еврея, китайской диаспоры, чернокожих спортсменов и даже русского олигарха."
+                data-age="18+"
+                data-category="преступление, комедия, боевик"
+                data-duration="1 час 53 минут"
+                data-link="https://yandex.ru/video/preview/18442353999123771675?noreask=1"
+                onclick="handleClick(this)"
+                >
+                Подробнее
+            </button>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <a
+            href="https://youtu.be/m2rhVO13aoo?si=2OLzuoLIQFbnFwuk"
+            target="_blank"
+            ><img
+              src="./img/tower.jpg"
+              alt="Обложка фильма Вышка"
+              loading="lazy"
+          /></a>
+
+          <div class="info">
+            <h4>Вышка</h4>
+            <span>2022</span>
+            <button
+                class="btn btn-card"
+                data-title="Вышка"
+                data-img="./img/tower.jpg"
+                data-year="2022"
+                data-description="После гибели Дэна в результате падения со скалы его жена Бекки, ранее увлекавшаяся экстремальными развлечениями, впала в депрессию. Год спустя девушка всё ещё не может прийти в себя и регулярно заливает горе алкоголем, когда в её жизни внезапно появляется старая боевая подруга Хантер. Она предлагает почтить память Дэна, забравшись на телерадиомачту B67 и развеяв там его прах. Девушки отправляются к самому высокому сооружению Соединённых Штатов, даже не представляя, с чем им придётся столкнуться на его верхушке."
+                data-age="18+"
+                data-category="триллер"
+                data-duration="1 час 47 минут"
+                data-link="https://yandex.ru/video/preview/3038545282819037902?noreask=1"
+                onclick="handleClick(this)"
+                >
+                Подробнее
+            </button>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <a
+            href="https://youtu.be/m2rhVO13aoo?si=2OLzuoLIQFbnFwuk"
+            target="_blank"
+            ><img
+              src="./img/interstellar.jpg"
+              alt="Обложка фильма Интерстеллар"
+              loading="lazy"
+          /></a>
+
+          <div class="info">
+            <h4>Интерстеллар</h4>
+            <span>2014</span>
+            <button
+                class="btn btn-card"
+                data-title="Интерстеллар"
+                data-img="./img/interstellar.jpg"
+                data-year="2014"
+                data-description="Когда засуха, пыльные бури и вымирание растений приводят человечество к продовольственному кризису, коллектив исследователей и учёных отправляется сквозь червоточину (которая предположительно соединяет области пространства-времени через большое расстояние) в путешествие, чтобы превзойти прежние ограничения для космических путешествий человека и найти планету с подходящими для человечества условиями."
+                data-age="18+"
+                data-category="фантастика, драмма, приключения"
+                data-duration="2 часа 49 минут"
+                data-link="https://yandex.ru/video/preview/4204624214618904460?noreask=1"
+                onclick="handleClick(this)"
+                >
+                Подробнее
+            </button>
+          </div>
+        </div>
+        
+        <div class="video-card">
+          <a
+            href="https://youtu.be/m2rhVO13aoo?si=2OLzuoLIQFbnFwuk"
+            target="_blank"
+            ><img
+              src="./img/volk.jpg"
+              alt="Обложка фильма Волк с Уолл-стрит"
+              loading="lazy"
+          /></a>
+
+          <div class="info">
+            <h4>Волк с Уолл-стрит</h4>
+            <span>2013</span>
+            <button
+                class="btn btn-card"
+                data-title="Волк с Уолл-стрит"
+                data-img="./img/volk.jpg"
+                data-year="2013"
+                data-description="1987 год. Джордан Белфорт становится брокером в успешном инвестиционном банке. Вскоре банк закрывается после внезапного обвала индекса Доу-Джонса. По совету жены Терезы Джордан устраивается в небольшое заведение, занимающееся мелкими акциями. Его настойчивый стиль общения с клиентами и врождённая харизма быстро даёт свои плоды. Он знакомится с соседом по дому Донни, торговцем, который сразу находит общий язык с Джорданом и решает открыть с ним собственную фирму."
+                data-age="13+"
+                data-category="драма, преступление, биография, комедия"
+                data-duration="3 часа"
+                data-link="https://yandex.ru/video/preview/8070422924180532836?noreask=1"
+                onclick="handleClick(this)"
+                >
+                Подробнее
+            </button>
+          </div>
+        </div>
+
+        <div class="video-card">
+          <a
+            href="https://youtu.be/m2rhVO13aoo?si=2OLzuoLIQFbnFwuk"
+            target="_blank"
+            ><img
+              src="./img/one.jpg"
+              alt="Обложка фильма 1+1"
+              loading="lazy"
+          /></a>
+
+          <div class="info">
+            <h4>1+1</h4>
+            <span>2019</span>
+            <button
+                class="btn btn-card"
+                data-title="1+1"
+                data-img="./img/one.jpg"
+                data-year="2019"
+                data-description="Пострадав в результате несчастного случая, богатый аристократ Филипп нанимает в помощники человека, который менее всего подходит для этой работы, – молодого жителя предместья Дрисса, только что освободившегося из тюрьмы. Несмотря на то, что Филипп прикован к инвалидному креслу, Дриссу удается привнести в размеренную жизнь аристократа дух приключений."
+                data-age="18+"
+                data-category="драма, комедия"
+                data-duration="1 час 52 минуты"
+                data-link="https://yandex.ru/video/preview/13158628360150361588?noreask=1"
+                onclick="handleClick(this)"
+                >
+                Подробнее
+            </button>
+          </div>
+        </div>   
+       
+      </div>
+    </section>
+
+
+    <div class="modal" id="videoModal">
+      <div class="modal-content">
+        <img id="modalImage" src="" alt="Картинка" />
+        <h2 id="modalTitle"></h2>
+        <p><strong>Год:</strong> <span id="modalYear"></span></p>
+        <p><strong>Описание:</strong> <span id="modalDescription"></span></p>
+        <p><strong>Возраст:</strong> <span id="modalAge"></span></p>
+        <p><strong>Категория:</strong> <span id="modalCategory"></span></p>
+        <p><strong>Длительность:</strong> <span id="modalDuration"></span></p>
+        <div class="modal-actions">
+          <i class="material-icons" title="Лайк">thumb_up</i>
+          <i class="material-icons" title="Избранное">star_border</i>
+          <i class="material-icons" title="Смотреть позже">watch_later</i>
+        </div>
+        <div class="buttons">
+          <button onclick="closeModal()">Закрыть</button>
+          <!-- <button>Смотреть фильм</button> -->
+           <a id="watchMovieBtn" href="#" class="btn" target="_blank">Смотреть фильм</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script/script-index.js"></script>
+  </body>
+</html>

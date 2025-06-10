@@ -21,6 +21,4 @@ db.sqlite3
 # Node / React (если используется)
 node_modules/
 
-# Static / media
-/staticfiles/
-/media/
+

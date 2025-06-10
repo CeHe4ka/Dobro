@@ -1,10 +1,122 @@
-{% extends "base.html" %}
-{% block content %}
-<h2>Вход</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Войти</button>
-</form>
-<a href="{% url 'accounts:register' %}">Зарегистрироваться</a>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <link rel="stylesheet" href="{% static 'styles/fonts.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/globals.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'styles/style.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+</head>
+<body>
+<header class="header">
+    <p class="header-title">Добро</p>
+</header>
+
+<main class="container">
+    <div class="form-box">
+
+        <!-- Форма входа -->
+        <form method="post" action="{% url 'accounts:login' %}" class="LoginForm">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="login">
+            <h2>Вход</h2>
+
+            {% if form.errors %}
+                <div class="alert alert-danger" style="color: red;">Неверный email или пароль.</div>
+            {% endif %}
+
+            <div class="input-box">
+                {{ form.username }}
+                <label for="{{ form.username.id_for_label }}">E-mail</label>
+                <i class="bx bxs-user"></i>
+                {% for error in form.username.errors %}
+                    <div style="color: red;">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="input-box">
+                {{ form.password }}
+                <label for="{{ form.password.id_for_label }}">Пароль</label>
+                <i class="bx bxs-lock-alt"></i>
+                {% for error in form.password.errors %}
+                    <div style="color: red;">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="forget-section">
+                <p>
+                    <input type="checkbox" name="remember_me"> Запомнить меня
+                </p>
+                <a class="link-foget" href="{% url 'password_reset' %}">Забыли пароль?</a>
+            </div>
+
+            <button class="btn" type="submit">Войти</button>
+
+            <div class="account-creation">
+                <span>Нет аккаунта? <a href="#" class="RegisterLink">Зарегистрироваться</a></span>
+            </div>
+        </form>
+
+        <!-- Форма регистрации -->
+        <form method="post" action="{% url 'accounts:login' %}" class="RegisterForm">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="register">
+
+            <h2>Регистрация</h2>
+
+            {% if register_form.errors %}
+                <div class="alert alert-danger" style="color: red;">Проверьте введённые данные</div>
+            {% endif %}
+
+            <div class="input-box">
+                {{ register_form.email }}
+                <label for="{{ register_form.email.id_for_label }}">E-mail</label>
+                <i class="bx bxs-user"></i>
+                {% for error in register_form.email.errors %}
+                    <div style="color: red;">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="input-box">
+                {{ register_form.birth_date }}
+                <label for="{{ register_form.birth_date.id_for_label }}">Дата рождения</label>
+                <i class="bx bxs-calendar-alt"></i>
+                {% for error in register_form.birth_date.errors %}
+                    <div style="color: red;">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="input-box">
+                {{ register_form.password1 }}
+                <label for="{{ register_form.password1.id_for_label }}">Пароль</label>
+                <i class="bx bxs-lock-alt"></i>
+                {% for error in register_form.password1.errors %}
+                    <div style="color: red;">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="input-box">
+                {{ register_form.password2 }}
+                <label for="{{ register_form.password2.id_for_label }}">Повторите пароль</label>
+                <i class="bx bxs-lock-alt"></i>
+                {% for error in register_form.password2.errors %}
+                    <div style="color: red;">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <button class="btn" type="submit">Зарегистрироваться</button>
+
+            <div class="account-creation">
+                <span>Есть аккаунт? <a href="#" class="LoginLink">Войти</a></span>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script src="{% static 'script/script.js' %}"></script>
+</body>
+</html>

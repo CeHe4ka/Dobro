@@ -1,37 +1,116 @@
-{% extends 'base.html' %}
+{% load static %}
+{% load dict_filters %}
+{% load video_filters %}
 
-{% block content %}
-<div class="container mt-4">
-  <h2 class="mb-4">💖 Избранные видео</h2>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Видео платформа</title>
+    <link rel="stylesheet" href="{% static 'fonts/fonts.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/variables.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/style-favourites.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+</head>
+<body>
 
-  {% if videos %}
-    <div class="row">
-      {% for video in videos %}
-        <div class="col-md-6 col-lg-4 mb-4">
-          <div class="card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ video.title }}</h5>
-              <p class="card-text">{{ video.description|truncatechars:100 }}</p>
-              <p><strong>Автор:</strong> {{ video.author }}</p>
-              <p><strong>Категория:</strong> {{ video.category }}</p>
-              <p><strong>Теги:</strong> {{ video.tags }}</p>
+<section class="sidebar">
+    <nav class="sidebar__nav">
+        <ul class="sidebar__list">
+            <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
+            <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История просмотров</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Посмотреть позже</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span>
+            </li>
+        </ul>
+    </nav>
+</section>
 
-              <div class="mt-auto gap-2">
-                <a href="{{ video.youtube_url }}" target="_blank" class="btn btn-sm btn-outline-primary w-10">На YouTube</a>
-                <form method="post" action="{% url 'videos:toggle_favorite' video.id %}" class="w-10">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-sm btn-danger w-100">Удалить из избранного</button>
-                </form>
-              </div>
-            </div>
-          </div>
+<section class="main">
+    <div class="top-bar">
+        <h1 class="header">Избранное</h1>
+        <div class="filters">
+            <select class="btn btn-search">
+                <option value="">Категория</option>
+                <option>Комедии</option>
+                <option>Драмы</option>
+                <option>Мелодрамы</option>
+                <option>Ужасы</option>
+                <option>Боевики</option>
+                <option>Фантастика</option>
+            </select>
         </div>
-      {% endfor %}
     </div>
-  {% else %}
-    <div class="alert alert-warning">
-      У вас пока нет избранных видео.
+
+    <div class="video-grid">
+        {% for video in videos %}
+        <div class="video-card">
+            <img src="https://img.youtube.com/vi/{{ video.youtube_url|youtube_id }}/hqdefault.jpg"
+                 alt="{{ video.title }}">
+            <div class="info">
+                <h4>{{ video.title }}</h4>
+                <span>{{ video.category }}</span>
+                <div class="card-actions">
+                    <button class="btn btn-card"
+                            onclick="openModal(
+            '{{ video.title }}',
+            'https://img.youtube.com/vi/{{ video.youtube_url|youtube_id }}/hqdefault.jpg',
+            '{{ video.year }}',
+            '{{ video.description|escapejs }}',
+            '{{ video.age_limit }}',
+            '{{ video.category }}',
+            '{{ video.duration }}',
+            'https://www.youtube.com/watch?v={{ video.youtube_url|youtube_id }}',
+            {{ video.id }}
+        )">
+                        Подробнее
+                    </button>
+
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Нет доступных видео.</p>
+        {% endfor %}
     </div>
-  {% endif %}
-</div>
-{% endblock %}
+
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Картинка">
+            <h2 id="modalTitle"></h2>
+            <p><strong>Год:</strong> <span id="modalYear"></span></p>
+            <p><strong>Описание:</strong> <span id="modalDescription"></span></p>
+            <p><strong>Возраст:</strong> <span id="modalAge"></span></p>
+            <p><strong>Категория:</strong> <span id="modalCategory"></span></p>
+            <p><strong>Длительность:</strong> <span id="modalDuration"></span></p>
+            <div class="modal-actions">
+                <i class="material-icons" title="Лайк">thumb_up</i>
+                <i class="material-icons"
+                   id="modalFavoriteBtn"
+                   title="Избранное">
+                    star_border
+                </i>
+                <i class="material-icons"
+                   id="modalWatchLaterBtn"
+                   title="Смотреть позже">
+                    watch_later
+                </i>
+            </div>
+            <div class="buttons">
+                <button id="modalCloseButton">Закрыть</button>
+                <a id="modalWatchButton" class="btn">Смотреть</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{% static 'script/script-favourites.js' %}"></script>
+</body>
+</html>

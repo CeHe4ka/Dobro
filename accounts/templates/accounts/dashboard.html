@@ -1,98 +1,99 @@
+{% load static %}
+{% load dict_filters %}
+{% load video_filters %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Личный кабинет</title>
-  <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f2f5;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    header {
-      background: #0055aa;
-      color: white;
-      padding: 15px 30px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
-    nav {
-      background: #fff;
-      max-width: 400px;
-      margin: 20px auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
-      padding: 15px 0;
-    }
-    nav ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    nav li {
-      margin: 0;
-      border-bottom: 1px solid #ddd;
-    }
-    nav li:last-child {
-      border-bottom: none;
-    }
-    nav a {
-      display: block;
-      padding: 12px 20px;
-      color: #0055aa;
-      text-decoration: none;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-    nav a:hover {
-      background: #e0ebff;
-      color: #003d80;
-    }
-    main {
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px 15px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
-      text-align: center;
-    }
-    main h1 {
-      margin-bottom: 8px;
-      font-size: 22px;
-      color: #0055aa;
-    }
-    main p {
-      margin-top: 0;
-      font-size: 16px;
-      color: #444;
-    }
-    footer {
-      margin-top: 40px;
-      text-align: center;
-      color: #888;
-      font-size: 14px;
-    }
-  </style>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Главная страница</title>
+    <link rel="stylesheet" href="{% static 'fonts/fonts.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/variables.css' %}"/>
+    <link rel="stylesheet" href="{% static 'styles/style-index.css' %}"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 </head>
 <body>
-  <header>Главная страница пользователя</header>
-  <main>
-    <h1>Добро пожаловать, {{ user.first_name }}!</h1>
-    <p>Вы вошли как: {{ user.email }}</p>
-  </main>
-  <nav>
-    <ul>
-      <li><a href="{% url 'videos:catalog' %}">Каталог видео</a></li>
-      <li><a href="{% url 'videos:history' %}">История просмотров</a></li>
-      <li><a href="{% url 'videos:favorites' %}">Избранное</a></li>
-      <li><a href="{% url 'accounts:profile' %}">Профиль</a></li>
-      <li><a href="{% url 'logout' %}">Выйти</a></li>
-    </ul>
-  </nav>
+
+<section class="sidebar">
+    <nav class="sidebar__nav">
+        <ul class="sidebar__list">
+            <li class="sidebar__item"><span class="sidebar__logo">Добро</span></li>
+            <li class="sidebar__item"><i class="material-icons">home</i><span><a href="{% url 'accounts:dashboard' %}">Главная</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">star</i><span><a href="{% url 'videos:favorites' %}">Избранное</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">history</i><span><a href="{% url 'videos:history' %}">История просмотров</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">watch_later</i><span><a href="{% url 'videos:later' %}">Посмотреть позже</a></span>
+            </li>
+            <li class="sidebar__item"><i class="material-icons">person</i><span><a href="{% url 'accounts:profile' %}">Профиль</a></span>
+            </li>
+        </ul>
+    </nav>
+</section>
+
+<section class="main">
+    <div class="top-bar">
+        <h1 class="header">Добро пожаловать</h1>
+    </div>
+
+    <div class="video-grid">
+        {% for video in videos %}
+        <div class="video-card">
+            <img src="https://img.youtube.com/vi/{{ video.youtube_url|youtube_id }}/hqdefault.jpg"
+                 alt="{{ video.title }}">
+            <div class="info">
+                <h4>{{ video.title }}</h4>
+                <span>{{ video.category }}</span>
+                <div class="card-actions">
+                    <button class="btn btn-card"
+                            onclick="openModal(
+            '{{ video.title }}',
+            'https://img.youtube.com/vi/{{ video.youtube_url|youtube_id }}/hqdefault.jpg',
+            '{{ video.year }}',
+            '{{ video.description|escapejs }}',
+            '{{ video.age_limit }}',
+            '{{ video.category }}',
+            '{{ video.duration }}',
+            'https://www.youtube.com/watch?v={{ video.youtube_url|youtube_id }}',
+            {{ video.id }}
+        )">
+                        Подробнее
+                    </button>
+
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Нет доступных видео.</p>
+        {% endfor %}
+    </div>
+
+    <div class="modal" id="videoModal">
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Картинка">
+            <h2 id="modalTitle"></h2>
+            <p><strong>Год:</strong> <span id="modalYear"></span></p>
+            <p><strong>Описание:</strong> <span id="modalDescription"></span></p>
+            <p><strong>Возраст:</strong> <span id="modalAge"></span></p>
+            <p><strong>Категория:</strong> <span id="modalCategory"></span></p>
+            <p><strong>Длительность:</strong> <span id="modalDuration"></span></p>
+            <div class="modal-actions">
+                <i class="material-icons" title="Лайк">thumb_up</i>
+                <i class="material-icons" id ="modalFavoriteBtn" title="Избранное">star_border</i>
+               <i class="material-icons" id="modalWatchLaterBtn" title="Смотреть позже">watch_later</i>
+
+
+            </div>
+            <div class="buttons">
+                <button onclick="closeModal()">Закрыть</button>
+                <a id="modalWatchButton" class="btn" >Смотреть</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="{% static 'script/script-favourites.js' %}"></script>
 </body>
 </html>

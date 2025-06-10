@@ -1,0 +1,10 @@
+:root {
+    --back-img: url(../img/cover.jpg);
+    --dark-decor: rgba(0, 0, 0, 0.2);
+    --light--decor: rgba(255, 255, 255, 0.4);
+    --accent-color: #065241;
+    --dark-aacent-color: #04362b;
+    --main-color: #fff;
+    --fw-bold: 600;
+    --fw-norm: 400;
+}
