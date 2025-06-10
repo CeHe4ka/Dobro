@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class Video(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -16,10 +17,12 @@ class Video(models.Model):
     duration = models.CharField(max_length=255, null=True, blank=True)
     age = models.CharField(max_length=255, null=True, blank=True)
     year = models.CharField(max_length=255, null=True, blank=True)
+    is_approved = models.BooleanField(default=False)
 
 
     def __str__(self):
         return self.title
+
 
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -38,6 +41,7 @@ class Favorite(models.Model):
     def str(self):
         return f"{self.user} - избранное: {self.video}"
 
+
 class ViewLog(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
@@ -48,6 +52,7 @@ class ViewLog(models.Model):
 
     def __str__(self):
         return f"{self.user.email} смотрел {self.video.title}"
+
 
 # Create your models here.
 class WatchLater(models.Model):

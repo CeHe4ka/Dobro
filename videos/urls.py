@@ -17,5 +17,7 @@ urlpatterns = [
     path('is_watch_later/<int:video_id>/', views.is_watch_later, name='is_watch_later'),
     path('history/', views.history_view, name='history'),
     path('is_favorite/<int:video_id>/', views.is_favorite, name='is_favorite'),
+    path('add/', views.add_video, name='add_video'),
+    path('add-video/', views.add_video, name='add_video'),
 
 ]

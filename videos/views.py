@@ -8,7 +8,7 @@ from .models import Rating
 from django.http import JsonResponse, HttpResponseBadRequest
 from .models import WatchLater
 from django.utils import timezone
-
+from .forms import VideoForm
 
 @login_required
 def video_catalog(request):
@@ -217,3 +217,25 @@ def is_favorite(request, video_id):
     except Video.DoesNotExist:
         return JsonResponse({'is_favorite': False})
 
+@login_required
+def add_video(request):
+    if not request.user.is_editor:
+        return redirect('accounts:dashboard')
+
+    if request.method == 'POST':
+        form = VideoForm(request.POST)
+        if form.is_valid():
+            video = form.save(commit=False)
+            video.author = request.user.get_full_name()  # сохраняем ФИО автора
+            video.save()
+            messages.success(request, "Видео добавлено.")
+            return redirect('accounts:profile')
+        else:
+            messages.error(request, "Ошибка в форме. Проверьте поля.")
+    else:
+        form = VideoForm()
+
+    return render(request, 'accounts/add_video_modal.html', {'form': form})
+
+
+    return render(request, 'videos/add_video.html', {'form': form})
